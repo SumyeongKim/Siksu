@@ -4,19 +4,19 @@ from pytz import timezone
 import re
 
 partnames = {
-    '방유석',
-    '강정민',
-    '김수명',
-    '최종호',
-    '이남진',
-    '고범석',
-    '노성재',
-    '김기웅',
-    '경동구',
-    '이태영',
-    '홍승준',
-    '김지한',
-    '강지언'
+    '방유석': True,
+    '강정민': True,
+    '김수명': True,
+    '최종호': True,
+    '이남진': True,
+    '고범석': True,
+    '노성재': True,
+    '김기웅': True,
+    '경동구': True,
+    '이태영': True,
+    '홍승준': True,
+    '김지한': True,
+    '강지언': True
 }
 
 with open('mail.html', 'r', encoding='UTF8') as f:
@@ -30,20 +30,21 @@ titles = tree.xpath('//*[contains(@class, \'cls_col_subject\')]')
 names = tree.xpath('//*[contains(@class, \'cls_col_name\')]')
 
 
-parts = [(name.text, title.text) for name, title in zip(names, titles) if name.text in partnames ]
+parts = [(name.text, title.text) for name, title in zip(names, titles) if name.text in partnames]
 pattern = r'\d+/\d+|\d.*월.*\d.*일|~|-'
 
 total = len(partnames)
 
 print('today: ', today)
 for (name, title) in parts:
+    if not partnames[name]:
+        continue
     matches = re.findall(pattern, title)
     for i in range(len(matches)):
         if '/' in matches[i]:
             date_format = "%m/%d"
             matches[i] = datetime.strptime(matches[i], date_format).date()
             matches[i] = matches[i].replace(year=yearnow)
-            total -= 1
         elif '월' in matches[i]:
             date_format = "%m월%d일"
             matches[i] = datetime.strptime(matches[i].replace(' ', ''), date_format).date()
@@ -56,9 +57,16 @@ for (name, title) in parts:
             if start <= today <= end:
                 print(name, start, '~', end)
                 print('\t' + title)
+                total -= 1
+                partnames[name] = False
             i += 3
         else:
             if matches[i] == today:
                 print(name, today)
                 print('\t' + title)
+                total -= 1
+                partnames[name] = False
             i += 1
+print('총원  :', len(partnames))
+print('열외  :', len(partnames) - total)
+print('현재원:', total)
