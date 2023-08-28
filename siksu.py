@@ -31,7 +31,7 @@ names = tree.xpath('//*[contains(@class, \'cls_col_name\')]')
 
 
 parts = [(name.text, title.text) for name, title in zip(names, titles) if name.text in partnames]
-pattern = r'\d+/\d+|\d.*월.*\d.*일|~|-'
+pattern = r'\d+/\d+|\d+\s*월\s*\d+\s*일|~|-'
 
 total = len(partnames)
 
@@ -45,7 +45,7 @@ for (name, title) in parts:
             date_format = "%m/%d"
             matches[i] = datetime.strptime(matches[i], date_format).date()
             matches[i] = matches[i].replace(year=yearnow)
-        elif '월' in matches[i]:
+        elif '월' in matches[i] and '일' in matches[i]:
             date_format = "%m월%d일"
             matches[i] = datetime.strptime(matches[i].replace(' ', ''), date_format).date()
             matches[i] = matches[i].replace(year=yearnow)
