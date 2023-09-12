@@ -16,7 +16,7 @@ partnames = {
     '이태영': True,
     '홍승준': True,
     '김지한': True,
-    '강지언': True
+    '강지언': True,
 }
 
 with open('mail.html', 'r', encoding='UTF8') as f:
@@ -31,7 +31,8 @@ names = tree.xpath('//*[contains(@class, \'cls_col_name\')]')
 
 
 parts = [(name.text, title.text) for name, title in zip(names, titles) if name.text in partnames]
-pattern = r'\d+/\d+|\d+\s*월\s*\d+\s*일|~|-'
+pattern = r'\d+/\d+|\d+\s*월\s*\d+\s*일|~|-|\b\d{1,2}\b'
+digitpat = r'\b\d{1,2}\b'
 
 total = len(partnames)
 
@@ -54,6 +55,8 @@ for (name, title) in parts:
         if i < len(matches) - 2 and (matches[i + 1] == '~' or matches[i + 1] == '-'):
             start = matches[i]
             end = matches[i + 2]
+            if isinstance(end, str) and re.match(digitpat, end):
+                end = datetime(year=start.year, month=start.month,day=int(end)).date()
             if start <= today <= end:
                 print(name, start, '~', end)
                 print('\t' + title)
