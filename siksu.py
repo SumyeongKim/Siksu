@@ -2,6 +2,7 @@ from lxml import html
 from datetime import datetime
 from pytz import timezone
 import re
+import DownloadMail
 
 partnames = {
     '방유석': True,
@@ -19,8 +20,7 @@ partnames = {
     '강지언': True,
 }
 
-with open('mail.html', 'r', encoding='UTF8') as f:
-    doc = f.read()
+doc = DownloadMail.getMail()
 
 tree = html.fromstring(doc)
 yearnow = 2023
