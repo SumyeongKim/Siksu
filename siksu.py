@@ -3,6 +3,7 @@ from datetime import datetime
 from pytz import timezone
 import re
 import DownloadMail
+import threading
 
 partnames = {
     '방유석': True,
@@ -20,7 +21,8 @@ partnames = {
     '강지언': True,
 }
 
-doc = DownloadMail.getMail()
+stop_event = threading.Event()
+doc = DownloadMail.getMail(stop_event)
 
 tree = html.fromstring(doc)
 yearnow = 2023
